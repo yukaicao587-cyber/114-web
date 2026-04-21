@@ -1,1 +1,191 @@
-lab1
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>簡單隨機抽籤器</title>
+    <style>
+        /* CSS 樣式：負責網頁外觀 */
+        :root {
+            --primary-color: #6366f1;
+            --hover-color: #4f46e5;
+            --bg-color: #f8fafc;
+        }
+
+        body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #334155;
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 0.5rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            box-sizing: border-box; /* 確保寬度包含 padding */
+            font-size: 1rem;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--hover-color);
+        }
+
+        /* 結果顯示區域 */
+        #result-container {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: #f1f5f9;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .result-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+
+        #winner {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        /* 動態效果：抽籤時的閃爍 */
+        .picking {
+            color: var(--primary-color) !important;
+            animation: pulse 0.1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎯 隨機抽籤</h1>
+        
+        <label for="nameList">請輸入名單 (每行一個名字)：</label>
+        <textarea id="nameList" placeholder="王小明&#10;李大華&#10;張美麗..."></textarea>
+        
+        <button onclick="pickWinner()">開始抽籤</button>
+
+        <div id="result-container">
+            <div class="result-label">中獎者是...</div>
+            <div id="winner">等待抽籤</div>
+        </div>
+
+        <a href="../index.html" class="back-link">返回作品集主頁</a>
+    </div>
+
+    <script>
+        /* JavaScript：負責邏輯處理 */
+        function pickWinner() {
+            const textarea = document.getElementById('nameList');
+            const winnerDisplay = document.getElementById('winner');
+            
+            // 1. 取得內容並過濾掉空白行
+            // split('\n') 將字串按換行符號切成陣列
+            const names = textarea.value.split('\n')
+                .map(name => name.trim()) // 去除前後空白
+                .filter(name => name !== ''); // 過濾空行
+
+            // 2. 檢查名單是否為空
+            if (names.length === 0) {
+                alert('請先輸入至少一個名字！');
+                return;
+            }
+
+            // 3. 製作抽籤動畫效果 (跑馬燈效果)
+            let counter = 0;
+            const duration = 20; // 動畫跳動次數
+            winnerDisplay.classList.add('picking');
+
+            const interval = setInterval(() => {
+                // 隨機選一個顯示
+                const randomIndex = Math.floor(Math.random() * names.length);
+                winnerDisplay.innerText = names[randomIndex];
+                
+                counter++;
+                if (counter >= duration) {
+                    clearInterval(interval); // 停止計時器
+                    winnerDisplay.classList.remove('picking');
+                    
+                    // 最後確定的一個人
+                    const finalIndex = Math.floor(Math.random() * names.length);
+                    winnerDisplay.innerText = names[finalIndex];
+                }
+            }, 50); // 每 50 毫秒變換一次
+        }
+    </script>
+
+</body>
+</html>
